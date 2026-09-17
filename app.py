@@ -12,17 +12,25 @@ from rag_bot import RAGBot
 
 st.set_page_config(page_title="RAG Chat", page_icon="🤖")
 
-# --- Cached bot (survives re-runs) ---
+
 @st.cache_resource
 def get_bot():
+    """Create bot with lazy Ollama connection."""
     return RAGBot(llm_backend=None)
+
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
 bot = get_bot()
 
-# --- Simple sidebar: upload + stats ---
+# Initialize Ollama once
+if not bot._ollama and not bot._generator:
+    bot.llm_backend = "ollama"
+    bot.llm_model = "phi3"
+    bot._init_llm()
+
+# --- Sidebar: upload + stats ---
 with st.sidebar:
     st.title("RAG Chat")
     st.caption("Local | Free | No API keys")
@@ -33,7 +41,6 @@ with st.sidebar:
         type=["pdf", "txt", "docx", "md"],
         key="uploader",
     )
-
 
     if uploaded and bot:
         existing = set(c.source for c in bot.chunks)
@@ -80,10 +87,6 @@ if prompt and bot.get_stats()["num_chunks"] > 0:
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             try:
-                if not bot._ollama and not bot._generator:
-                    bot.llm_backend = "ollama"
-                    bot.llm_model = "phi3"
-                    bot._init_llm()
                 result = bot.query(prompt)
                 st.markdown(result.answer)
                 if result.sources:
