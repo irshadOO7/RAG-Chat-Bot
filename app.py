@@ -76,7 +76,7 @@ if prompt and bot.get_stats()["num_chunks"] > 0:
             try:
                 if not bot._ollama and not bot._generator:
                     bot.llm_backend = "ollama"
-                    bot.llm_model = "llama3"
+                    bot.llm_model = "phi3"
                     bot._init_llm()
                 result = bot.query(prompt)
                 st.markdown(result.answer)
