@@ -31,7 +31,7 @@ if ! command -v ollama &> /dev/null; then
     echo ""
     echo "After installing Ollama, run these commands:"
     echo "  ollama serve          # Start the Ollama server"
-    echo "  ollama pull llama3    # Download the Llama 3 model"
+    echo "  ollama pull phi3    # Download the Llama 3 model"
 else
     echo "Ollama found: $(ollama --version 2>/dev/null || echo 'installed')"
     echo ""
@@ -41,7 +41,7 @@ else
     sleep 3
 
     echo "Pulling llama3 model (this may take a while)..."
-    ollama pull llama3
+    ollama pull phi3
 
     echo "Stopping background Ollama server..."
     kill $OLLAMA_PID 2>/dev/null || true

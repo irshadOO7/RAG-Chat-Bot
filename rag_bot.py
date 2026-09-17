@@ -70,7 +70,7 @@ class RAGBot:
     """
 
     EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
-    DEFAULT_LLM_MODEL = "llama3"
+    DEFAULT_LLM_MODEL = "phi3"
     DEFAULT_TEMPERATURE = 0.3
     DEFAULT_TOP_K = 5
     DEFAULT_CHUNK_SIZE = 512

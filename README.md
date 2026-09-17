@@ -42,7 +42,7 @@ curl -fsSL https://ollama.com/install.sh | sh
 Start Ollama and pull a model:
 ```bash
 ollama serve            # Run in a separate terminal
-ollama pull llama3      # Download model (~4GB)
+ollama pull phi3      # Download model (~4GB)
 ```
 
 > **Alternative:** Use the `google/flan-t5-base` model via the transformers backend
@@ -160,7 +160,7 @@ Solution: Start the Ollama server: `ollama serve` (keep it running in a separate
 ```
 Error: model 'xxx' not found
 ```
-Solution: Pull the model first: `ollama pull <model_name>`
+Solution: Pull the model first: `ollama pull phi3`
 
 **Unsupported file type**
 Make sure the file extension is `.pdf`, `.txt`, `.docx`, or `.md`
