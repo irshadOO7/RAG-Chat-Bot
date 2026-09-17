@@ -12,12 +12,15 @@ from rag_bot import RAGBot
 
 st.set_page_config(page_title="RAG Chat", page_icon="🤖")
 
-# --- Initialize bot once ---
-if "bot" not in st.session_state:
-    st.session_state.bot = RAGBot(llm_backend=None)  # lazy Ollama init
+# --- Cached bot (survives re-runs) ---
+@st.cache_resource
+def get_bot():
+    return RAGBot(llm_backend=None)
+
+if "messages" not in st.session_state:
     st.session_state.messages = []
 
-bot = st.session_state.bot
+bot = get_bot()
 
 # --- Simple sidebar: upload + stats ---
 with st.sidebar:
@@ -31,21 +34,24 @@ with st.sidebar:
         key="uploader",
     )
 
+
     if uploaded and bot:
-        with tempfile.NamedTemporaryFile(
-            delete=False, suffix=Path(uploaded.name).suffix
-        ) as tmp:
-            tmp.write(uploaded.read())
-            tmp_path = tmp.name
-        try:
-            with st.spinner(f"Processing {uploaded.name}..."):
-                result = bot.add_document(tmp_path, uploaded.name)
-            st.success(f"Added: {result['num_chunks']} chunks")
-            st.session_state.messages = []
-        except Exception as e:
-            st.error(str(e))
-        finally:
-            os.unlink(tmp_path)
+        existing = set(c.source for c in bot.chunks)
+        if uploaded.name not in existing:
+            with tempfile.NamedTemporaryFile(
+                delete=False, suffix=Path(uploaded.name).suffix
+            ) as tmp:
+                tmp.write(uploaded.read())
+                tmp_path = tmp.name
+            try:
+                with st.spinner(f"Processing {uploaded.name}..."):
+                    result = bot.add_document(tmp_path, uploaded.name)
+                st.success(f"Added: {result['num_chunks']} chunks")
+                st.session_state.messages = []
+            except Exception as e:
+                st.error(str(e))
+            finally:
+                os.unlink(tmp_path)
 
     if st.button("Clear Chat"):
         st.session_state.messages = []
